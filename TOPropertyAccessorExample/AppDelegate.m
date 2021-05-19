@@ -16,16 +16,42 @@
 
 - (void)testPropertyAccessor
 {
-    // Make a test subclass object
+    // Make an instance of our test subclass
     TOTestAccessor *test = [[TOTestAccessor alloc] init];
 
-    // Set a value (These won't be saved, but they'll be printed to console)
-    test.string = @"Test";
-    test.integer = 1;
+    // Make an NSCache object reference, and test that the same
+    // instance is returned (eg, the property is properly retaining as normal)]
+    NSCache *testCache = [[NSCache alloc] init];
+    test.nonCodingObject = testCache;
 
-    // Try getting the values
-    NSLog(@"Provided integer was %ld", (long)test.integer);
-    NSLog(@"Provided string was %@", test.string);
+    // Try accessing the value of each of the properties in this object.
+    // They will be the static values we set in `valueForProperty:`
+    NSLog(@"TOTestAccessor: Int %ld", (long)test.integerValue);
+    NSLog(@"TOTestAccessor: Float %f", test.floatValue);
+    NSLog(@"TOTestAccessor: Double %f", test.doubleValue);
+    NSLog(@"TOTestAccessor: Bool %d", test.boolValue);
+    NSLog(@"TOTestAccessor: Date %@", test.dateValue);
+    NSLog(@"TOTestAccessor: String %@", test.stringValue);
+    NSLog(@"TOTestAccessor: Array %@", test.arrayValue);
+    NSLog(@"TOTestAccessor: Dictionary %@", test.dictionaryValue);
+    NSLog(@"TOTestAccessor: Object %@", test.objectValue);
+    NSLog(@"TOTestAccessor: Non-coding %@", test.nonCodingObject);
+
+    NSLog(@"-----------------------------------");
+
+    // Try setting the value on each of our properties.
+    // The custom implementation will print out the value we set.
+    test.integerValue = 2;
+    test.floatValue = 2.0f;
+    test.doubleValue = 2.0;
+    test.boolValue = @(NO);
+    test.dateValue = [NSDate date];
+    test.stringValue = @"Hello yourself!";
+    test.arrayValue = @[@"Hello", @"Yourself"];
+    test.dictionaryValue = @{@"message": @"Hello yourself!"};
+    test.objectValue = [UIColor redColor];
+
+    NSLog(@"TOTestAccessor: Non-coding object: %@ %@", testCache, test.nonCodingObject);
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
