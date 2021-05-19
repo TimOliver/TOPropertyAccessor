@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		221AA4522655495600BA2898 /* TOPropertyAccessorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 221AA4512655495600BA2898 /* TOPropertyAccessorTests.m */; };
+		221AA4592655498100BA2898 /* TOPropertyAccessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 223CCED0264D759E00DBA5AA /* TOPropertyAccessor.m */; };
+		221AA45A2655498300BA2898 /* TOTestAccessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 22628650265110DA00B5842D /* TOTestAccessor.m */; };
 		223CCEB7264D6BDF00DBA5AA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 223CCEB6264D6BDF00DBA5AA /* AppDelegate.m */; };
 		223CCEC2264D6BE000DBA5AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 223CCEC1264D6BE000DBA5AA /* Assets.xcassets */; };
 		223CCEC5264D6BE000DBA5AA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 223CCEC3264D6BE000DBA5AA /* LaunchScreen.storyboard */; };
@@ -15,7 +18,20 @@
 		22628651265110DA00B5842D /* TOTestAccessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 22628650265110DA00B5842D /* TOTestAccessor.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		221AA4542655495600BA2898 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 223CCEAA264D6BDF00DBA5AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 223CCEB1264D6BDF00DBA5AA;
+			remoteInfo = TOPropertyAccessorExample;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		221AA44F2655495600BA2898 /* TOPropertyAccessorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TOPropertyAccessorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		221AA4512655495600BA2898 /* TOPropertyAccessorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TOPropertyAccessorTests.m; sourceTree = "<group>"; };
+		221AA4532655495600BA2898 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		223CCEB2264D6BDF00DBA5AA /* TOPropertyAccessorExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TOPropertyAccessorExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		223CCEB5264D6BDF00DBA5AA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		223CCEB6264D6BDF00DBA5AA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -30,6 +46,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		221AA44C2655495600BA2898 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		223CCEAF264D6BDF00DBA5AA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -40,11 +63,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		221AA4502655495600BA2898 /* TOPropertyAccessorTests */ = {
+			isa = PBXGroup;
+			children = (
+				221AA4512655495600BA2898 /* TOPropertyAccessorTests.m */,
+				221AA4532655495600BA2898 /* Info.plist */,
+			);
+			path = TOPropertyAccessorTests;
+			sourceTree = "<group>";
+		};
 		223CCEA9264D6BDF00DBA5AA = {
 			isa = PBXGroup;
 			children = (
 				223CCECE264D759E00DBA5AA /* TOPropertyAccessor */,
 				223CCEB4264D6BDF00DBA5AA /* TOPropertyAccessorExample */,
+				221AA4502655495600BA2898 /* TOPropertyAccessorTests */,
 				223CCEB3264D6BDF00DBA5AA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -53,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				223CCEB2264D6BDF00DBA5AA /* TOPropertyAccessorExample.app */,
+				221AA44F2655495600BA2898 /* TOPropertyAccessorTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -84,6 +118,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		221AA44E2655495600BA2898 /* TOPropertyAccessorTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 221AA4582655495600BA2898 /* Build configuration list for PBXNativeTarget "TOPropertyAccessorTests" */;
+			buildPhases = (
+				221AA44B2655495600BA2898 /* Sources */,
+				221AA44C2655495600BA2898 /* Frameworks */,
+				221AA44D2655495600BA2898 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				221AA4552655495600BA2898 /* PBXTargetDependency */,
+			);
+			name = TOPropertyAccessorTests;
+			productName = TOPropertyAccessorTests;
+			productReference = 221AA44F2655495600BA2898 /* TOPropertyAccessorTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		223CCEB1264D6BDF00DBA5AA /* TOPropertyAccessorExample */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 223CCECB264D6BE000DBA5AA /* Build configuration list for PBXNativeTarget "TOPropertyAccessorExample" */;
@@ -109,6 +161,10 @@
 			attributes = {
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
+					221AA44E2655495600BA2898 = {
+						CreatedOnToolsVersion = 12.5;
+						TestTargetID = 223CCEB1264D6BDF00DBA5AA;
+					};
 					223CCEB1264D6BDF00DBA5AA = {
 						CreatedOnToolsVersion = 12.5;
 					};
@@ -128,11 +184,19 @@
 			projectRoot = "";
 			targets = (
 				223CCEB1264D6BDF00DBA5AA /* TOPropertyAccessorExample */,
+				221AA44E2655495600BA2898 /* TOPropertyAccessorTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		221AA44D2655495600BA2898 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		223CCEB0264D6BDF00DBA5AA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -145,6 +209,16 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		221AA44B2655495600BA2898 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				221AA45A2655498300BA2898 /* TOTestAccessor.m in Sources */,
+				221AA4592655498100BA2898 /* TOPropertyAccessor.m in Sources */,
+				221AA4522655495600BA2898 /* TOPropertyAccessorTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		223CCEAE264D6BDF00DBA5AA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -158,6 +232,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		221AA4552655495600BA2898 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 223CCEB1264D6BDF00DBA5AA /* TOPropertyAccessorExample */;
+			targetProxy = 221AA4542655495600BA2898 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		223CCEC3264D6BE000DBA5AA /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
@@ -170,6 +252,44 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		221AA4562655495600BA2898 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6LF3GMKZAB;
+				INFOPLIST_FILE = TOPropertyAccessorTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.tim.TOPropertyAccessorTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TOPropertyAccessorExample.app/TOPropertyAccessorExample";
+			};
+			name = Debug;
+		};
+		221AA4572655495600BA2898 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6LF3GMKZAB;
+				INFOPLIST_FILE = TOPropertyAccessorTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.tim.TOPropertyAccessorTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TOPropertyAccessorExample.app/TOPropertyAccessorExample";
+			};
+			name = Release;
+		};
 		223CCEC9264D6BE000DBA5AA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -321,6 +441,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		221AA4582655495600BA2898 /* Build configuration list for PBXNativeTarget "TOPropertyAccessorTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				221AA4562655495600BA2898 /* Debug */,
+				221AA4572655495600BA2898 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		223CCEAD264D6BDF00DBA5AA /* Build configuration list for PBXProject "TOPropertyAccessorExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
