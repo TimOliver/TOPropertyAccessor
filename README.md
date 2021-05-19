@@ -21,6 +21,7 @@ The goal behind this library is to make it trivial to set up custom classes with
 Using `TOPropertyAccessor` is very easy. All you need to do is subclass it, and put all of your logic in the subclass.
 
 ### Header
+
 ```objc
 // Define a subclass with a property.
 @interface MyCustomClass: TOPropertyAccessor
@@ -31,8 +32,9 @@ Using `TOPropertyAccessor` is very easy. All you need to do is subclass it, and 
 ```
 
 ### Implementation
+
 ```objc
-@implementation
+@implementation MyCustomClass
 
 - (id)valueForProperty:(NSString *)propertyName
                   type:(TOPropertyAccessorDataType)type
