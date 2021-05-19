@@ -22,27 +22,17 @@
 
 #import "TOPropertyAccessor.h"
 #import <objc/runtime.h>
-#import <pthread/pthread.h>
 
 // -----------------------------------------------------------------------
 
 @interface TOPropertyAccessor ()
 
-/** Due to the time spent serializing them, `<NSCoding>` objects
-    are cached in this object until they are unretained */
+// Due to the time spent serializing them, `<NSCoding>` objects
+// are cached in this object until they are unretained
 @property (nonatomic, strong) NSMapTable *dataPropertyCache;
 
-/** Works out the property name from the name of the setter selector */
+// Works out the property name from the name of the setter selector
 - (NSString *)propertyNameForSetterSelector:(SEL)selector;
-
-/** A mutex lock for controlling writing to the decoded object cache*/
-@property (assign, nonatomic) pthread_mutex_t mutex;
-
-/** A local cache for */
-
-/** Save and fetch the decoded versions of any */
-- (id)cachedDecodedObjectForKey:(NSString *)key;
-- (void)setCachedDecodedObject:(id)object forKey:(NSString *)key;
 
 @end
 
@@ -153,6 +143,8 @@ static NSInteger getIntegerPropertyValue(TOPropertyAccessor *self, SEL _cmd)
     return [(NSNumber *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeInt] intValue];
 }
 
+// --------
+
 // Float
 static void setFloatPropertyValue(TOPropertyAccessor *self, SEL _cmd, float floatValue)
 {
@@ -168,7 +160,9 @@ static float getFloatPropertyValue(TOPropertyAccessor *self, SEL _cmd)
     return [(NSNumber *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeFloat] floatValue];
 }
 
-//Double
+// --------
+
+// Double
 static void setDoublePropertyValue(TOPropertyAccessor *self, SEL _cmd, double doubleValue)
 {
     NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
@@ -183,7 +177,9 @@ static double getDoublePropertyValue(TOPropertyAccessor *self, SEL _cmd)
     return [(NSNumber *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeFloat] doubleValue];
 }
 
-//Bool
+// --------
+
+// Bool
 static void setBoolPropertyValue(TOPropertyAccessor *self, SEL _cmd, BOOL boolValue)
 {
     NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
@@ -198,7 +194,9 @@ static BOOL getBoolPropertyValue(TOPropertyAccessor *self, SEL _cmd)
     return [(NSNumber *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeBool] boolValue];
 }
 
-//String
+// --------
+
+// String
 static void setStringPropertyValue(TOPropertyAccessor *self, SEL _cmd, NSString *stringValue)
 {
     NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
@@ -213,61 +211,92 @@ static NSString *getStringPropertyValue(TOPropertyAccessor *self, SEL _cmd)
     return (NSString *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeString];
 }
 
-//Dictionary
-static void setObjectPropertyValue(TOPropertyAccessor *self, SEL _cmd, id objectValue)
+// --------
+
+//Date
+static void setDatePropertyValue(TOPropertyAccessor *self, SEL _cmd, NSDate *dateValue)
 {
     NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
     [self willChangeValueForKey:propertyName];
-    [self setValue:objectValue forProperty:propertyName type:TOPropertyAccessorDataTypeDictionary];
+    [self setValue:(NSDate *)dateValue forProperty:propertyName type:TOPropertyAccessorDataTypeDate];
+    [self didChangeValueForKey:propertyName];
+}
+
+static NSDate *getDatePropertyValue(TOPropertyAccessor *self, SEL _cmd)
+{
+    NSString *propertyName = NSStringFromSelector(_cmd);
+    return (NSDate *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeDate];
+}
+
+// --------
+
+// Data
+static void setDataPropertyValue(TOPropertyAccessor *self, SEL _cmd, NSData *dataValue)
+{
+    NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
+    [self willChangeValueForKey:propertyName];
+    [self setValue:(NSData *)dataValue forProperty:propertyName type:TOPropertyAccessorDataTypeData];
+    [self didChangeValueForKey:propertyName];
+}
+
+static NSData *getDataPropertyValue(TOPropertyAccessor *self, SEL _cmd)
+{
+    NSString *propertyName = NSStringFromSelector(_cmd);
+    return (NSData *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeData];
+}
+
+// --------
+
+// Array
+static void setArrayPropertyValue(TOPropertyAccessor *self, SEL _cmd, NSArray *arrayValue)
+{
+    NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
+    [self willChangeValueForKey:propertyName];
+    [self setValue:arrayValue forProperty:propertyName type:TOPropertyAccessorDataTypeArray];
+    [self didChangeValueForKey:propertyName];
+}
+
+static NSDictionary *getArrayPropertyValue(TOPropertyAccessor *self, SEL _cmd)
+{
+    NSString *propertyName = NSStringFromSelector(_cmd);
+    return [self valueForProperty:propertyName type:TOPropertyAccessorDataTypeArray];
+}
+
+// --------
+
+// Dictionary
+static void setDictionaryPropertyValue(TOPropertyAccessor *self, SEL _cmd, NSDictionary *dictionaryValue)
+{
+    NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
+    [self willChangeValueForKey:propertyName];
+    [self setValue:dictionaryValue forProperty:propertyName type:TOPropertyAccessorDataTypeDictionary];
+    [self didChangeValueForKey:propertyName];
+}
+
+static NSDictionary *getDictionaryPropertyValue(TOPropertyAccessor *self, SEL _cmd)
+{
+    NSString *propertyName = NSStringFromSelector(_cmd);
+    return [self valueForProperty:propertyName type:TOPropertyAccessorDataTypeDictionary];
+}
+
+// --------
+
+// Object
+static void setObjectPropertyValue(TOPropertyAccessor *self, SEL _cmd, id object)
+{
+    NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
+    [self willChangeValueForKey:propertyName];
+    [self setValue:object forProperty:propertyName type:TOPropertyAccessorDataTypeObject];
     [self didChangeValueForKey:propertyName];
 }
 
 static id getObjectPropertyValue(TOPropertyAccessor *self, SEL _cmd)
 {
     NSString *propertyName = NSStringFromSelector(_cmd);
-    return [self valueForProperty:propertyName type:TOPropertyAccessorDataTypeDictionary];
+    return [self valueForProperty:propertyName type:TOPropertyAccessorDataTypeObject];
 }
 
-//Object
-static void setArchivableObjectPropertyValue(TOPropertyAccessor *self, SEL _cmd, id object)
-{
-    NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
-    [self willChangeValueForKey:propertyName];
-    NSData *objectData = nil;
-    if (@available(iOS 11.0, *)) {
-        objectData = [NSKeyedArchiver archivedDataWithRootObject:object
-                                           requiringSecureCoding:NO
-                                                           error:nil];
-    } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        objectData = [NSKeyedArchiver archivedDataWithRootObject:object];
-#pragma clang diagnostic pop
-    }
-    [self setValue:objectData forProperty:propertyName type:TOPropertyAccessorDataTypeObject];
-    [self didChangeValueForKey:propertyName];
-    [self setCachedDecodedObject:object forKey:propertyName];
-}
-
-static id getArchivableObjectPropertyValue(TOPropertyAccessor *self, SEL _cmd)
-{
-    NSString *propertyName = NSStringFromSelector(_cmd);
-    id object = [self cachedDecodedObjectForKey:propertyName];
-    if (object) { return object; }
-    
-    NSData *objectData = [self valueForProperty:propertyName type:TOPropertyAccessorDataTypeObject];
-    if (objectData == nil) { return nil; }
-    if (@available(iOS 11.0, *)) {
-        return [NSKeyedUnarchiver unarchivedObjectOfClass:NSObject.class
-                                                 fromData:objectData
-                                                    error:nil];
-    }
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    return [NSKeyedUnarchiver unarchiveObjectWithData:objectData];
-#pragma clang diagnostic pop
-}
+// --------
 
 static inline void TOPropertyAccessorReplaceAccessors(Class class,
                                                       NSString *name,
@@ -299,24 +328,24 @@ static inline void TOPropertyAccessorReplaceAccessors(Class class,
             newSetter = (IMP)setStringPropertyValue;
             break;
         case TOPropertyAccessorDataTypeDate:
-            newGetter = (IMP)getObjectPropertyValue;
-            newSetter = (IMP)setObjectPropertyValue;
+            newGetter = (IMP)getDatePropertyValue;
+            newSetter = (IMP)setDatePropertyValue;
             break;
         case TOPropertyAccessorDataTypeData:
-            newGetter = (IMP)getObjectPropertyValue;
-            newSetter = (IMP)setObjectPropertyValue;
+            newGetter = (IMP)getDataPropertyValue;
+            newSetter = (IMP)setDataPropertyValue;
             break;
         case TOPropertyAccessorDataTypeArray:
-            newGetter = (IMP)getObjectPropertyValue;
-            newSetter = (IMP)setObjectPropertyValue;
+            newGetter = (IMP)getArrayPropertyValue;
+            newSetter = (IMP)setArrayPropertyValue;
             break;
         case TOPropertyAccessorDataTypeDictionary:
-            newGetter = (IMP)getObjectPropertyValue;
-            newSetter = (IMP)setObjectPropertyValue;
+            newGetter = (IMP)getDictionaryPropertyValue;
+            newSetter = (IMP)setDictionaryPropertyValue;
             break;
         case TOPropertyAccessorDataTypeObject:
-            newGetter = (IMP)getArchivableObjectPropertyValue;
-            newSetter = (IMP)setArchivableObjectPropertyValue;
+            newGetter = (IMP)getObjectPropertyValue;
+            newSetter = (IMP)setObjectPropertyValue;
             break;
         default:
             break;
@@ -405,13 +434,7 @@ static inline void TOPropertyAccessorSwapClassPropertyAccessors(Class class)
 {
     // Before first init, perform the Objective-C runtime swap of all of this class's properties
     TOPropertyAccessorSwapClassPropertyAccessors(self.class);
-
-    if (self = [super init]) {
-        // Create the mutex lock for the decoded data cache
-        __unused int result = pthread_mutex_init(&_mutex, NULL);
-        NSAssert(result == 0, @"TOPropertyAccessor: Was unable to create mutex lock");
-    }
-
+    if (self = [super init]) { }
     return self;
 }
 
@@ -445,24 +468,8 @@ static inline void TOPropertyAccessorSwapClassPropertyAccessors(Class class)
     // Inform KVO the property is changing
     [self willChangeValueForKey:key];
     
-    // If an archivable object, encode it and cache it
-    if (type == TOPropertyAccessorDataTypeObject) {
-        NSData *objectData = nil;
-        if (@available(iOS 11.0, *)) {
-            objectData = [NSKeyedArchiver archivedDataWithRootObject:value
-                                               requiringSecureCoding:NO error:nil];
-        } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            objectData = [NSKeyedArchiver archivedDataWithRootObject:value];
-#pragma clang diagnostic pop
-        }
-        [self setValue:objectData forProperty:key type:TOPropertyAccessorDataTypeObject];
-        [self setCachedDecodedObject:value forKey:key];
-    }
-    else {
-        [self setValue:value forProperty:key type:type];
-    }
+    // Set the new value for this property
+    [self setValue:value forProperty:key type:type];
     
     // Inform KVO the key has changed
     [self didChangeValueForKey:key];
@@ -476,16 +483,9 @@ static inline void TOPropertyAccessorSwapClassPropertyAccessors(Class class)
     
     // Work out what type of object this is from the schema
     TOPropertyAccessorDataType type = [self typeForPropertyWithName:key];
-    if (type == TOPropertyAccessorDataTypeUnknown) {
-        return [super valueForKey:key];
-    }
-    
-    // If an archived object, forward it to the getter function
-    if (type == TOPropertyAccessorDataTypeObject) {
-        return getArchivableObjectPropertyValue(self, @selector(key));
-    }
-    
-    // Otherwise, get the value straight from NSUserDefaults
+    if (type == TOPropertyAccessorDataTypeUnknown) { return [super valueForKey:key]; }
+
+    // Get the value straight from the backing store
     return [self valueForProperty:key type:type];
 }
 
@@ -510,7 +510,6 @@ static inline void TOPropertyAccessorSwapClassPropertyAccessors(Class class)
 - (void)setValue:(_Nullable id)value forProperty:(NSString *)propertyName
             type:(TOPropertyAccessorDataType)type { }
 + (nullable NSArray *)ignoredProperties { return nil; }
-+ (nullable NSDictionary *)defaultPropertyValues { return nil; }
 
 #pragma mark - Static State Management -
 + (NSString *)instanceKeyNameWithIdentifier:(NSString *)identifier
@@ -547,40 +546,6 @@ static inline void TOPropertyAccessorSwapClassPropertyAccessors(Class class)
                     [propertyName substringFromIndex:1]];
     
     return propertyName;
-}
-
-#pragma mark - NSCoder Decoded Object Caching -
-
-- (void)lock
-{
-    __unused int result = pthread_mutex_lock(&_mutex);
-    NSAssert(result == 0, @"TOPropertyAccessor: Unable to lock mutex");
-}
-
-- (void)unlock
-{
-    __unused int result = pthread_mutex_unlock(&_mutex);
-    NSAssert(result == 0, @"TOPropertyAccessor: Unable to unlock mutex");
-}
-
-- (id)cachedDecodedObjectForKey:(NSString *)key
-{
-    id object = nil;
-    [self lock];
-        object = [self.dataPropertyCache objectForKey:key];
-    [self unlock];
-
-    return object;
-}
-
-- (void)setCachedDecodedObject:(id)object forKey:(NSString *)key
-{
-    [self lock];
-        if (self.dataPropertyCache == nil) {
-            self.dataPropertyCache = [NSMapTable strongToWeakObjectsMapTable];
-        }
-        [self.dataPropertyCache setObject:object forKey:key];
-    [self unlock];
 }
 
 @end

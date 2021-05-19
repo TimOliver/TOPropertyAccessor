@@ -39,6 +39,12 @@ typedef NS_ENUM (NSInteger, TOPropertyAccessorDataType) {
     TOPropertyAccessorDataTypeObject
 };
 
+/// An abstract class that when subclassed, will utilize
+/// the Objective-C runtime to hook all of the public properties
+/// of the subclass and route them through a single overridable point.
+///
+/// This class is great for dynamically linking the properties of a subclass
+/// to any kind of backing store, such as user defaults, or file attributes.
 NS_SWIFT_NAME(PropertyAccessor)
 @interface TOPropertyAccessor : NSObject
 
@@ -59,18 +65,12 @@ NS_SWIFT_NAME(PropertyAccessor)
             type:(TOPropertyAccessorDataType)type;
 
 /// Override this method with an array of any property names
-/// that should be opted out of being dynamically accessed.
+/// that will be skipped from being hooked, and will behave as normal.
 + (nullable NSArray<NSString *> *)ignoredProperties;
-
-/// Override this method with a dictionary of default values.
-/// These will be applied the first time of execution when it
-/// is detected that `NSUserDefaults` does not contain entries
-/// for these keys.
-+ (nullable NSDictionary<NSString *, id> *)defaultPropertyValues;
 
 /// :nodoc:
 /// These method defines enable subscripting, where property
-/// values can be set like an `NSDictionary`.
+/// values may be read and set like a dictionary object.
 - (id)objectForKeyedSubscript:(NSString *)key;
 - (void)setObject:(id)obj forKeyedSubscript:(NSString *)key;
 
