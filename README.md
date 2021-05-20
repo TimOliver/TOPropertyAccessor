@@ -3,7 +3,7 @@
 [![CI](https://github.com/TimOliver/TOPropertyAccessor/actions/workflows/ci.yml/badge.svg)](https://github.com/TimOliver/TOPropertyAccessor/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/cocoapods/v/TOPropertyAccessor.svg?style=flat)](http://cocoadocs.org/docsets/TOPropertyAccessor)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/TimOliver/TOPropertyAccessor/main/LICENSE)
-[![Platform](https://img.shields.io/cocoapods/p/TOPropertyAccessor.svg?style=flat)](http://cocoadocs.org/docsets/TOPropertyAccessor)
+[![Platform](https://img.shields.io/cocoapods/p/TOPropertyAccessor.svg?style=flat&color=brightgreen)](http://cocoadocs.org/docsets/TOPropertyAccessor)
 
 `TOPropertyAccessor` is an open source, Objective-C abstract class. Similar to [Realm](https://github.com/realm/realm-cocoa)'s Cocoa API, it uses the dynamic nature of the Objective-C runtime to access the properties of any of its subclasses, and routes calling them through overridable access points.
 
