@@ -20,7 +20,6 @@
 
     XCTAssertEqual(test.integerValue, 1);
     XCTAssertEqual(test.floatValue, 1.1);
-    XCTAssertEqual(test.doubleValue, 1.1);
     XCTAssertEqual(test.boolValue, YES);
     XCTAssertEqual(test.dateValue, [NSDate dateWithTimeIntervalSince1970:0]);
     XCTAssertEqual(test.stringValue, @"Hello world!");
@@ -35,7 +34,6 @@
     TOTestAccessor *test = [[TOTestAccessor alloc] init];
     test.integerValue = 2;
     test.floatValue = 2.0f;
-    test.doubleValue = 2.0;
     test.boolValue = @(NO);
     test.dateValue = [NSDate date];
     test.stringValue = @"Hello yourself!";

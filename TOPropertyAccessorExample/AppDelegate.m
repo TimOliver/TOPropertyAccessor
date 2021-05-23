@@ -28,7 +28,6 @@
     // They will be the static values we set in `valueForProperty:`
     NSLog(@"TOTestAccessor: Int %ld", (long)test.integerValue);
     NSLog(@"TOTestAccessor: Float %f", test.floatValue);
-    NSLog(@"TOTestAccessor: Double %f", test.doubleValue);
     NSLog(@"TOTestAccessor: Bool %d", test.boolValue);
     NSLog(@"TOTestAccessor: Date %@", test.dateValue);
     NSLog(@"TOTestAccessor: String %@", test.stringValue);
@@ -43,7 +42,6 @@
     // The custom implementation will print out the value we set.
     test.integerValue = 2;
     test.floatValue = 2.0f;
-    test.doubleValue = 2.0;
     test.boolValue = @(NO);
     test.dateValue = [NSDate date];
     test.stringValue = @"Hello yourself!";
@@ -58,7 +56,11 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
     self.window.rootViewController = [[UIViewController alloc] init];
-    self.window.rootViewController.view.backgroundColor = [UIColor systemBackgroundColor];
+    if (@available(iOS 13.0, *)) {
+        self.window.rootViewController.view.backgroundColor = [UIColor systemBackgroundColor];
+    } else {
+        self.window.rootViewController.view.backgroundColor = [UIColor whiteColor];
+    }
     [self.window makeKeyAndVisible];
 
     [self testPropertyAccessor];
