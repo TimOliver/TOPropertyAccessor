@@ -27,12 +27,11 @@
 
 @interface TOPropertyAccessor ()
 
-// Due to the time spent serializing them, `<NSCoding>` objects
-// are cached in this object until they are unretained
-@property (nonatomic, strong) NSMapTable *dataPropertyCache;
-
-// Works out the property name from the name of the setter selector
+// Determines the property name from the name of the setter selector
 - (NSString *)propertyNameForSetterSelector:(SEL)selector;
+
+// Determines the class type that any given object property may return
+- (Class)returnedClassForObjectProperty:(NSString *)propertyName;
 
 @end
 
@@ -48,7 +47,10 @@ static inline TOPropertyAccessorDataType TOPropertyAccessorDataTypeForProperty(c
     char propertyType = attributes[1];
     
     switch (propertyType) {
-        case 'q': return TOPropertyAccessorDataTypeInt;
+        case 'i': return TOPropertyAccessorDataTypeInt;
+        case 'q': return TOPropertyAccessorDataTypeLong;
+        case 'I': return TOPropertyAccessorDataTypeUnsignedInt;
+        case 'Q': return TOPropertyAccessorDataTypeUnsignedLong;
         case 'd': return TOPropertyAccessorDataTypeDouble;
         case 'f': return TOPropertyAccessorDataTypeFloat;
         case 'B': return TOPropertyAccessorDataTypeBool;
@@ -116,7 +118,8 @@ static inline BOOL TOPropertyAccessorIsCompatibleObjectType(const char *attribut
     }
     
     // If it's an object type, see if we can check if it conforms to a protocol we support
-    Class class = NSClassFromString([NSString stringWithCString:name encoding:NSUTF8StringEncoding]);
+    Class class = NSClassFromString([NSString stringWithCString:name
+                                                       encoding:NSUTF8StringEncoding]);
     free(name);
     
     if ([class conformsToProtocol:@protocol(NSCoding)]) {
@@ -129,18 +132,81 @@ static inline BOOL TOPropertyAccessorIsCompatibleObjectType(const char *attribut
 #pragma mark - Accessor Implementations -
 
 // Int
-static void setIntegerPropertyValue(TOPropertyAccessor *self, SEL _cmd, NSInteger intValue)
+static void setIntPropertyValue(TOPropertyAccessor *self, SEL _cmd, int intValue)
 {
     NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
     [self willChangeValueForKey:propertyName];
-    [self setValue:@(intValue) forProperty:propertyName type:TOPropertyAccessorDataTypeInt];
+    [self setValue:@(intValue) forProperty:propertyName
+              type:TOPropertyAccessorDataTypeInt];
     [self didChangeValueForKey:propertyName];
 }
 
-static NSInteger getIntegerPropertyValue(TOPropertyAccessor *self, SEL _cmd)
+static int getIntPropertyValue(TOPropertyAccessor *self, SEL _cmd)
 {
     NSString *propertyName = NSStringFromSelector(_cmd);
-    return [(NSNumber *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeInt] intValue];
+    return [(NSNumber *)[self valueForProperty:propertyName
+                                          type:TOPropertyAccessorDataTypeInt
+                                   objectClass:nil] intValue];
+}
+
+// --------
+
+// Unsigned Int
+static void setUnsignedIntPropertyValue(TOPropertyAccessor *self, SEL _cmd, unsigned int intValue)
+{
+    NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
+    [self willChangeValueForKey:propertyName];
+    [self setValue:@(intValue) forProperty:propertyName
+              type:TOPropertyAccessorDataTypeUnsignedInt];
+    [self didChangeValueForKey:propertyName];
+}
+
+static unsigned long getUnsignedIntPropertyValue(TOPropertyAccessor *self, SEL _cmd)
+{
+    NSString *propertyName = NSStringFromSelector(_cmd);
+    return [(NSNumber *)[self valueForProperty:propertyName
+                                          type:TOPropertyAccessorDataTypeUnsignedInt
+                                   objectClass:nil] unsignedIntValue];
+}
+
+// --------
+
+// Long
+static void setLongPropertyValue(TOPropertyAccessor *self, SEL _cmd, long longValue)
+{
+    NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
+    [self willChangeValueForKey:propertyName];
+    [self setValue:@(longValue) forProperty:propertyName
+              type:TOPropertyAccessorDataTypeLong];
+    [self didChangeValueForKey:propertyName];
+}
+
+static long getLongPropertyValue(TOPropertyAccessor *self, SEL _cmd)
+{
+    NSString *propertyName = NSStringFromSelector(_cmd);
+    return [(NSNumber *)[self valueForProperty:propertyName
+                                          type:TOPropertyAccessorDataTypeLong
+                                   objectClass:nil] longValue];
+}
+
+// --------
+
+// Unsigned Long
+static void setUnsignedLongPropertyValue(TOPropertyAccessor *self, SEL _cmd, unsigned long longValue)
+{
+    NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
+    [self willChangeValueForKey:propertyName];
+    [self setValue:@(longValue) forProperty:propertyName
+              type:TOPropertyAccessorDataTypeUnsignedLong];
+    [self didChangeValueForKey:propertyName];
+}
+
+static unsigned long getUnsignedLongPropertyValue(TOPropertyAccessor *self, SEL _cmd)
+{
+    NSString *propertyName = NSStringFromSelector(_cmd);
+    return [(NSNumber *)[self valueForProperty:propertyName
+                                          type:TOPropertyAccessorDataTypeUnsignedLong
+                                   objectClass:nil] unsignedLongValue];
 }
 
 // --------
@@ -150,14 +216,17 @@ static void setFloatPropertyValue(TOPropertyAccessor *self, SEL _cmd, float floa
 {
     NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
     [self willChangeValueForKey:propertyName];
-    [self setValue:@(floatValue) forProperty:propertyName type:TOPropertyAccessorDataTypeFloat];
+    [self setValue:@(floatValue) forProperty:propertyName
+              type:TOPropertyAccessorDataTypeFloat];
     [self didChangeValueForKey:propertyName];
 }
 
 static float getFloatPropertyValue(TOPropertyAccessor *self, SEL _cmd)
 {
     NSString *propertyName = NSStringFromSelector(_cmd);
-    return [(NSNumber *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeFloat] floatValue];
+    return [(NSNumber *)[self valueForProperty:propertyName
+                                          type:TOPropertyAccessorDataTypeFloat
+                                   objectClass:nil] floatValue];
 }
 
 // --------
@@ -167,14 +236,17 @@ static void setDoublePropertyValue(TOPropertyAccessor *self, SEL _cmd, double do
 {
     NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
     [self willChangeValueForKey:propertyName];
-    [self setValue:@(doubleValue) forProperty:propertyName type:TOPropertyAccessorDataTypeDouble];
+    [self setValue:@(doubleValue) forProperty:propertyName
+              type:TOPropertyAccessorDataTypeDouble];
     [self didChangeValueForKey:propertyName];
 }
 
 static double getDoublePropertyValue(TOPropertyAccessor *self, SEL _cmd)
 {
     NSString *propertyName = NSStringFromSelector(_cmd);
-    return [(NSNumber *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeFloat] doubleValue];
+    return [(NSNumber *)[self valueForProperty:propertyName
+                                          type:TOPropertyAccessorDataTypeDouble
+                                   objectClass:nil] doubleValue];
 }
 
 // --------
@@ -184,14 +256,17 @@ static void setBoolPropertyValue(TOPropertyAccessor *self, SEL _cmd, BOOL boolVa
 {
     NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
     [self willChangeValueForKey:propertyName];
-    [self setValue:@(boolValue) forProperty:propertyName type:TOPropertyAccessorDataTypeBool];
+    [self setValue:@(boolValue) forProperty:propertyName
+              type:TOPropertyAccessorDataTypeBool];
     [self didChangeValueForKey:propertyName];
 }
 
 static BOOL getBoolPropertyValue(TOPropertyAccessor *self, SEL _cmd)
 {
     NSString *propertyName = NSStringFromSelector(_cmd);
-    return [(NSNumber *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeBool] boolValue];
+    return [(NSNumber *)[self valueForProperty:propertyName
+                                          type:TOPropertyAccessorDataTypeBool
+                                   objectClass:nil] boolValue];
 }
 
 // --------
@@ -201,14 +276,17 @@ static void setStringPropertyValue(TOPropertyAccessor *self, SEL _cmd, NSString 
 {
     NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
     [self willChangeValueForKey:propertyName];
-    [self setValue:(NSString *)stringValue forProperty:propertyName type:TOPropertyAccessorDataTypeString];
+    [self setValue:(NSString *)stringValue forProperty:propertyName
+              type:TOPropertyAccessorDataTypeString];
     [self didChangeValueForKey:propertyName];
 }
 
 static NSString *getStringPropertyValue(TOPropertyAccessor *self, SEL _cmd)
 {
     NSString *propertyName = NSStringFromSelector(_cmd);
-    return (NSString *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeString];
+    return (NSString *)[self valueForProperty:propertyName
+                                         type:TOPropertyAccessorDataTypeString
+                                  objectClass:nil];
 }
 
 // --------
@@ -218,14 +296,17 @@ static void setDatePropertyValue(TOPropertyAccessor *self, SEL _cmd, NSDate *dat
 {
     NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
     [self willChangeValueForKey:propertyName];
-    [self setValue:(NSDate *)dateValue forProperty:propertyName type:TOPropertyAccessorDataTypeDate];
+    [self setValue:(NSDate *)dateValue forProperty:propertyName
+              type:TOPropertyAccessorDataTypeDate];
     [self didChangeValueForKey:propertyName];
 }
 
 static NSDate *getDatePropertyValue(TOPropertyAccessor *self, SEL _cmd)
 {
     NSString *propertyName = NSStringFromSelector(_cmd);
-    return (NSDate *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeDate];
+    return (NSDate *)[self valueForProperty:propertyName
+                                       type:TOPropertyAccessorDataTypeDate
+                                objectClass:[NSDate class]];
 }
 
 // --------
@@ -235,14 +316,17 @@ static void setDataPropertyValue(TOPropertyAccessor *self, SEL _cmd, NSData *dat
 {
     NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
     [self willChangeValueForKey:propertyName];
-    [self setValue:(NSData *)dataValue forProperty:propertyName type:TOPropertyAccessorDataTypeData];
+    [self setValue:(NSData *)dataValue forProperty:propertyName
+              type:TOPropertyAccessorDataTypeData];
     [self didChangeValueForKey:propertyName];
 }
 
 static NSData *getDataPropertyValue(TOPropertyAccessor *self, SEL _cmd)
 {
     NSString *propertyName = NSStringFromSelector(_cmd);
-    return (NSData *)[self valueForProperty:propertyName type:TOPropertyAccessorDataTypeData];
+    return (NSData *)[self valueForProperty:propertyName
+                                       type:TOPropertyAccessorDataTypeData
+                                objectClass:[NSData class]];
 }
 
 // --------
@@ -259,7 +343,9 @@ static void setArrayPropertyValue(TOPropertyAccessor *self, SEL _cmd, NSArray *a
 static NSDictionary *getArrayPropertyValue(TOPropertyAccessor *self, SEL _cmd)
 {
     NSString *propertyName = NSStringFromSelector(_cmd);
-    return [self valueForProperty:propertyName type:TOPropertyAccessorDataTypeArray];
+    return [self valueForProperty:propertyName
+                             type:TOPropertyAccessorDataTypeArray
+                      objectClass:[NSArray class]];
 }
 
 // --------
@@ -276,7 +362,9 @@ static void setDictionaryPropertyValue(TOPropertyAccessor *self, SEL _cmd, NSDic
 static NSDictionary *getDictionaryPropertyValue(TOPropertyAccessor *self, SEL _cmd)
 {
     NSString *propertyName = NSStringFromSelector(_cmd);
-    return [self valueForProperty:propertyName type:TOPropertyAccessorDataTypeDictionary];
+    return [self valueForProperty:propertyName
+                             type:TOPropertyAccessorDataTypeDictionary
+                      objectClass:[NSDictionary class]];
 }
 
 // --------
@@ -293,7 +381,10 @@ static void setObjectPropertyValue(TOPropertyAccessor *self, SEL _cmd, id object
 static id getObjectPropertyValue(TOPropertyAccessor *self, SEL _cmd)
 {
     NSString *propertyName = NSStringFromSelector(_cmd);
-    return [self valueForProperty:propertyName type:TOPropertyAccessorDataTypeObject];
+    Class objectClass = [self returnedClassForObjectProperty:propertyName];
+    return [self valueForProperty:propertyName
+                             type:TOPropertyAccessorDataTypeObject
+                      objectClass:objectClass];
 }
 
 // --------
@@ -308,8 +399,20 @@ static inline void TOPropertyAccessorReplaceAccessors(Class class,
     
     switch (type) {
         case TOPropertyAccessorDataTypeInt:
-            newGetter = (IMP)getIntegerPropertyValue;
-            newSetter = (IMP)setIntegerPropertyValue;
+            newGetter = (IMP)getIntPropertyValue;
+            newSetter = (IMP)setIntPropertyValue;
+            break;
+        case TOPropertyAccessorDataTypeLong:
+            newGetter = (IMP)getLongPropertyValue;
+            newSetter = (IMP)setLongPropertyValue;
+            break;
+        case TOPropertyAccessorDataTypeUnsignedInt:
+            newGetter = (IMP)getUnsignedIntPropertyValue;
+            newSetter = (IMP)setUnsignedIntPropertyValue;
+            break;
+        case TOPropertyAccessorDataTypeUnsignedLong:
+            newGetter = (IMP)getUnsignedLongPropertyValue;
+            newSetter = (IMP)setUnsignedLongPropertyValue;
             break;
         case TOPropertyAccessorDataTypeFloat:
             newGetter = (IMP)getFloatPropertyValue;
@@ -485,8 +588,13 @@ static inline void TOPropertyAccessorSwapClassPropertyAccessors(Class class)
     TOPropertyAccessorDataType type = [self typeForPropertyWithName:key];
     if (type == TOPropertyAccessorDataTypeUnknown) { return [super valueForKey:key]; }
 
+    Class objectClass = nil;
+    if (type == TOPropertyAccessorDataTypeObject) {
+        objectClass = [self returnedClassForObjectProperty:key];
+    }
+
     // Get the value straight from the backing store
-    return [self valueForProperty:key type:type];
+    return [self valueForProperty:key type:type objectClass:objectClass];
 }
 
 - (BOOL)isIgnoredProperty:(NSString *)property
@@ -506,7 +614,8 @@ static inline void TOPropertyAccessorSwapClassPropertyAccessors(Class class)
 #pragma mark - Subclass Overridable -
 
 - (nullable id)valueForProperty:(NSString *)propertyName
-                           type:(TOPropertyAccessorDataType)type { return nil; }
+                           type:(TOPropertyAccessorDataType)type
+                    objectClass:(nullable Class)objectClass { return nil; }
 - (void)setValue:(_Nullable id)value forProperty:(NSString *)propertyName
             type:(TOPropertyAccessorDataType)type { }
 + (nullable NSArray *)ignoredProperties { return nil; }
@@ -546,6 +655,24 @@ static inline void TOPropertyAccessorSwapClassPropertyAccessors(Class class)
                     [propertyName substringFromIndex:1]];
     
     return propertyName;
+}
+
+- (Class)returnedClassForObjectProperty:(NSString *)propertyName
+{
+    objc_property_t property = class_getProperty([self class],
+                                                 propertyName.UTF8String);
+    if (property == NULL) { return nil; }
+
+    // Retrieve the attributes string of this property
+    const char *attributes = property_getAttributes(property);
+
+    // Get the class name that this property is expected to return
+    char *className = TOPropertyAccessorClassNameForPropertyAttributes(attributes);
+    if (className == NULL) { return nil; }
+
+    // Convert to NSString and then return the class
+    return NSClassFromString([NSString stringWithCString:className
+                                                encoding:NSUTF8StringEncoding]);
 }
 
 @end
