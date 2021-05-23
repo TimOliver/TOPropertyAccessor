@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name     = 'TOPropertyAccessor'
-  s.version  = '1.0.0'
+  s.version  = '1.1.0'
   s.license  =  { :type => 'MIT', :file => 'LICENSE' }
   s.summary  = 'An abstract class that enables hooking the properties of subclasses.'
   s.homepage = 'https://github.com/TimOliver/TOPropertyAccessor'
