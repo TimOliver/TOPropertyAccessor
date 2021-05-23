@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) NSInteger integerValue;
 @property (nonatomic, assign) CGFloat floatValue;
-@property (nonatomic, assign) double doubleValue;
 @property (nonatomic, assign) BOOL boolValue;
 @property (nonatomic, strong) NSDate *dateValue;
 @property (nonatomic, copy) NSString *stringValue;

@@ -47,11 +47,11 @@ static inline TOPropertyAccessorDataType TOPropertyAccessorDataTypeForProperty(c
     char propertyType = attributes[1];
     
     switch (propertyType) {
+        case 'q': // Long. Merge with Integer
         case 'i': return TOPropertyAccessorDataTypeInt;
-        case 'q': return TOPropertyAccessorDataTypeLong;
+        case 'Q': // Unsigned Long. Merge with Unsigned Int
         case 'I': return TOPropertyAccessorDataTypeUnsignedInt;
-        case 'Q': return TOPropertyAccessorDataTypeUnsignedLong;
-        case 'd': return TOPropertyAccessorDataTypeDouble;
+        case 'd': // Double. Merge with Double
         case 'f': return TOPropertyAccessorDataTypeFloat;
         case 'B': return TOPropertyAccessorDataTypeBool;
         default: break;
@@ -141,12 +141,12 @@ static void setIntPropertyValue(TOPropertyAccessor *self, SEL _cmd, int intValue
     [self didChangeValueForKey:propertyName];
 }
 
-static int getIntPropertyValue(TOPropertyAccessor *self, SEL _cmd)
+static long getIntPropertyValue(TOPropertyAccessor *self, SEL _cmd)
 {
     NSString *propertyName = NSStringFromSelector(_cmd);
     return [(NSNumber *)[self valueForProperty:propertyName
                                           type:TOPropertyAccessorDataTypeInt
-                                   objectClass:nil] intValue];
+                                   objectClass:nil] longValue];
 }
 
 // --------
@@ -169,50 +169,8 @@ static unsigned long getUnsignedIntPropertyValue(TOPropertyAccessor *self, SEL _
                                    objectClass:nil] unsignedIntValue];
 }
 
-// --------
-
-// Long
-static void setLongPropertyValue(TOPropertyAccessor *self, SEL _cmd, long longValue)
-{
-    NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
-    [self willChangeValueForKey:propertyName];
-    [self setValue:@(longValue) forProperty:propertyName
-              type:TOPropertyAccessorDataTypeLong];
-    [self didChangeValueForKey:propertyName];
-}
-
-static long getLongPropertyValue(TOPropertyAccessor *self, SEL _cmd)
-{
-    NSString *propertyName = NSStringFromSelector(_cmd);
-    return [(NSNumber *)[self valueForProperty:propertyName
-                                          type:TOPropertyAccessorDataTypeLong
-                                   objectClass:nil] longValue];
-}
-
-// --------
-
-// Unsigned Long
-static void setUnsignedLongPropertyValue(TOPropertyAccessor *self, SEL _cmd, unsigned long longValue)
-{
-    NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
-    [self willChangeValueForKey:propertyName];
-    [self setValue:@(longValue) forProperty:propertyName
-              type:TOPropertyAccessorDataTypeUnsignedLong];
-    [self didChangeValueForKey:propertyName];
-}
-
-static unsigned long getUnsignedLongPropertyValue(TOPropertyAccessor *self, SEL _cmd)
-{
-    NSString *propertyName = NSStringFromSelector(_cmd);
-    return [(NSNumber *)[self valueForProperty:propertyName
-                                          type:TOPropertyAccessorDataTypeUnsignedLong
-                                   objectClass:nil] unsignedLongValue];
-}
-
-// --------
-
 // Float
-static void setFloatPropertyValue(TOPropertyAccessor *self, SEL _cmd, float floatValue)
+static void setFloatPropertyValue(TOPropertyAccessor *self, SEL _cmd, double floatValue)
 {
     NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
     [self willChangeValueForKey:propertyName];
@@ -221,31 +179,11 @@ static void setFloatPropertyValue(TOPropertyAccessor *self, SEL _cmd, float floa
     [self didChangeValueForKey:propertyName];
 }
 
-static float getFloatPropertyValue(TOPropertyAccessor *self, SEL _cmd)
+static double getFloatPropertyValue(TOPropertyAccessor *self, SEL _cmd)
 {
     NSString *propertyName = NSStringFromSelector(_cmd);
     return [(NSNumber *)[self valueForProperty:propertyName
                                           type:TOPropertyAccessorDataTypeFloat
-                                   objectClass:nil] floatValue];
-}
-
-// --------
-
-// Double
-static void setDoublePropertyValue(TOPropertyAccessor *self, SEL _cmd, double doubleValue)
-{
-    NSString *propertyName = [self propertyNameForSetterSelector:_cmd];
-    [self willChangeValueForKey:propertyName];
-    [self setValue:@(doubleValue) forProperty:propertyName
-              type:TOPropertyAccessorDataTypeDouble];
-    [self didChangeValueForKey:propertyName];
-}
-
-static double getDoublePropertyValue(TOPropertyAccessor *self, SEL _cmd)
-{
-    NSString *propertyName = NSStringFromSelector(_cmd);
-    return [(NSNumber *)[self valueForProperty:propertyName
-                                          type:TOPropertyAccessorDataTypeDouble
                                    objectClass:nil] doubleValue];
 }
 
@@ -402,25 +340,14 @@ static inline void TOPropertyAccessorReplaceAccessors(Class class,
             newGetter = (IMP)getIntPropertyValue;
             newSetter = (IMP)setIntPropertyValue;
             break;
-        case TOPropertyAccessorDataTypeLong:
-            newGetter = (IMP)getLongPropertyValue;
-            newSetter = (IMP)setLongPropertyValue;
             break;
         case TOPropertyAccessorDataTypeUnsignedInt:
             newGetter = (IMP)getUnsignedIntPropertyValue;
             newSetter = (IMP)setUnsignedIntPropertyValue;
             break;
-        case TOPropertyAccessorDataTypeUnsignedLong:
-            newGetter = (IMP)getUnsignedLongPropertyValue;
-            newSetter = (IMP)setUnsignedLongPropertyValue;
-            break;
         case TOPropertyAccessorDataTypeFloat:
             newGetter = (IMP)getFloatPropertyValue;
             newSetter = (IMP)setFloatPropertyValue;
-            break;
-        case TOPropertyAccessorDataTypeDouble:
-            newGetter = (IMP)getDoublePropertyValue;
-            newSetter = (IMP)setDoublePropertyValue;
             break;
         case TOPropertyAccessorDataTypeBool:
             newGetter = (IMP)getBoolPropertyValue;
